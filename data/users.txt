@@ -1,0 +1,5 @@
+Student
+1001
+John Smith
+john@example.com
+password1

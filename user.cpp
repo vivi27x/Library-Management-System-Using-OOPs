@@ -1,9 +1,7 @@
 #include "lms.h"
 
 // User class implementation
-
 User::User() : id(0) {}
-
 User::User(int id, const std::string& name, const std::string& email, const std::string& password, const std::string& role)
     : id(id), name(name), email(email), password(password), role(role) {}
 

@@ -3,6 +3,16 @@
 #include <iomanip>
 
 // Book class implementation
+/*
+Books
+Define a Book class to represent books in the library.
+Attributes:
+• title, author, publisher, year, and ISBN.
+• Status: Tracks whether the book is available, borrowed, or reserved.
+Constraints:
+• Start with at least 5 books in the system.
+• Books can only be borrowed if their status is ”Available.”
+*/
 
 Book::Book() : year(0), borrowerId(0), borrowDate(0), dueDate(0) {
     status = "Available";

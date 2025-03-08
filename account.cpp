@@ -2,6 +2,17 @@
 #include <chrono>
 #include <iomanip>
 
+
+
+/*
+Account
+Create an Account class to track user activity. Each user has one account. The account must:
+• Maintain a record of currently borrowed books.
+• Track overdue books and calculate fines.
+• Store the borrowing history of the user.
+• Keep a record of fines and whether they have been paid.
+
+*/
 // Account class implementation
 
 Account::Account() : userId(0), fines(0), hasPaidFines(true) {}

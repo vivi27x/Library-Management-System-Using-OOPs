@@ -10,6 +10,33 @@
 #include <iomanip>
 #include <sstream>
 #include <algorithm>
+
+
+
+/*
+Classes:
+• Create at least four classes: User, Book, Account, and Library.
+• Use inheritance to derive Student, Faculty, and Librarian from the User class.
+2. Encapsulation:
+• Use private attributes for sensitive information like user credentials and account details.
+• Provide public methods for controlled access to private attributes. Each attribute of the class
+must have a member function to either update. Each attribute of a class must have a member
+function, that prints or shows the value of the attribute. the attribute or reset the value.
+3. Polymorphism: Implement common methods like borrowBook() and returnBook() differently for
+Student and Faculty. Use files to save data such as user details, book records, and borrowing
+transactions.
+4. File system:
+• When the program starts, load data from files to initialize the library system.
+• When the program shuts down, save the current state of the library system back to files.
+• Use appropriate file handling techniques to serialize and deserialize the data.
+In the main code() first build the library with at least 10 books, 5 students , 3 faculty and 1 librarian.
+Ensure that permissions to access methods are granted based on the role of the user account in Account
+class.
+The classes suggested here are just exemplary. Feel free to be a bit creative by adding your own data
+members or member functions such that the system is implemented in a more efficient way.
+*/
+
+
 // Forward declarations
 class Book;
 class User;
@@ -233,6 +260,7 @@ public:
 
 // Library class to manage the entire system
 class Library{
+
 private:
     std::map<int, User*> users;
     std::map<std::string, Book> books;
@@ -240,6 +268,23 @@ private:
     int currentUserId;
     std::string dataDirectory;
 
+    // CLI helper methods
+    void clearScreen();
+    void displayHeader();
+    void displayLoginMenu();
+    void displayStudentMenu();
+    void displayFacultyMenu();
+    void displayLibrarianMenu();
+    void displayBooksManagementMenu();
+    void displayUserManagementMenu();
+    void displaySystemReportsMenu();
+    void processMenuChoice(const std::string& choice);
+    void processLoginMenuChoice(const std::string& choice);
+    void processStudentMenuChoice(const std::string& choice);
+    void processFacultyMenuChoice(const std::string& choice);
+    void processLibrarianBooksMenuChoice(const std::string& choice, std::string& submenu);
+    void processLibrarianUsersMenuChoice(const std::string& choice, std::string& submenu);
+    void processLibrarianReportsMenuChoice(const std::string& choice, std::string& submenu);
     // Helper methods
     void addInitialData();
     void saveData();
