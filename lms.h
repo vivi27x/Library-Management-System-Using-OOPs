@@ -264,7 +264,7 @@ public:
     void addUser(User* user);
     void removeUser(int userId);
     void displayAllUsers() const;
-    User* findUser(int userId);
+    User* findUser(int userId) const;
     Book* findBook(const std::string& ISBN);
     Account* findAccount(int userId);
 
@@ -278,10 +278,10 @@ public:
     bool login(int userId, const std::string& password);
     void logout();
     bool isLoggedIn() const;
-    User* getCurrentUser() const;
+    User* getCurrentUser() const;    
 
     // Account operations
-    void displayUserAccount(int userId) const;
+    void displayUserAccount() const; // Remove userId parameter
     void payFines(int userId);
 
     // Run the library system

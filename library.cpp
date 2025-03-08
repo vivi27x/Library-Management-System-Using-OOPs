@@ -3,6 +3,8 @@
 #include <filesystem>
 #include <algorithm>
 #include <limits>
+#include <chrono>
+#include <iomanip>
 
 // Library class implementation
 
@@ -136,12 +138,11 @@ time_t Library::getCurrentDate() const {
 
 // Utility: Format time_t to readable string
 std::string Library::formatDate(time_t date) const {
-    char buffer[26];
-    ctime_r(&date, buffer);
-    std::string formatted(buffer);
-    if (!formatted.empty() && formatted.back() == '\n')
-        formatted.pop_back();
-    return formatted;
+    auto dateChrono = std::chrono::system_clock::from_time_t(date);
+    std::time_t dateC = std::chrono::system_clock::to_time_t(dateChrono);
+    std::ostringstream oss;
+    oss << std::put_time(std::localtime(&dateC), "%c %Z");
+    return oss.str();
 }
 
 // Utility: Calculate number of overdue days
@@ -155,15 +156,31 @@ int Library::calculateOverdueDays(time_t dueDate, time_t currentDate) const {
 // ----- Book Management -----
 
 void Library::addBook(const Book& book) {
+    if (!isLoggedIn() || getCurrentUser()->getRole() != "Librarian") {
+        std::cout << "Access denied. Only librarians can add books.\n";
+        return;
+    }
+    
     books[book.getISBN()] = book;
+    std::cout << "Book added successfully.\n";
 }
 
 void Library::removeBook(const std::string& ISBN) {
+    if (!isLoggedIn() || getCurrentUser()->getRole() != "Librarian") {
+        std::cout << "Access denied. Only librarians can remove books.\n";
+        return;
+    }
+    
     books.erase(ISBN);
+    std::cout << "Book removed successfully.\n";
 }
-
 void Library::updateBook(const Book& book) {
+    if (!isLoggedIn() || getCurrentUser()->getRole() != "Librarian") {
+        std::cout << "Access denied. Only librarians can add books.\n";
+        return;
+    }
     books[book.getISBN()] = book;
+    std::cout << "Book updated successfully.\n";
 }
 
 void Library::displayAllBooks() const {
@@ -185,25 +202,40 @@ void Library::searchBooks(const std::string& keyword) const {
 // ----- User Management -----
 
 void Library::addUser(User* user) {
+    if (!isLoggedIn() || getCurrentUser()->getRole() != "Librarian") {
+        std::cout << "Access denied. Only librarians can add users.\n";
+        return;
+    }
+    
     users[user->getId()] = user;
     accounts[user->getId()] = Account(user->getId());
+    std::cout << "User added successfully.\n";
 }
+
 
 void Library::removeUser(int userId) {
+    if (!isLoggedIn() || getCurrentUser()->getRole() != "Librarian") {
+        std::cout << "Access denied. Only librarians can remove users.\n";
+        return;
+    }
+    
     users.erase(userId);
     accounts.erase(userId);
+    std::cout << "User removed successfully.\n";
 }
-
 void Library::displayAllUsers() const {
+    if (!isLoggedIn() || getCurrentUser()->getRole() != "Librarian") {
+        std::cout << "Access denied. Only librarians can remove users.\n";
+        return;
+    }
     for (const auto& pair : users)
         pair.second->displayDetails();
 }
 
-User* Library::findUser(int userId) {
+User* Library::findUser(int userId) const {  // Add 'const' here as well
+
     auto it = users.find(userId);
-    if (it != users.end())
-        return it->second;
-    return nullptr;
+    return (it != users.end()) ? it->second : nullptr;
 }
 
 Book* Library::findBook(const std::string& ISBN) {
@@ -313,21 +345,26 @@ void Library::calculateFines() {
 }
 
 // ----- Authentication -----
-
 bool Library::login(int userId, const std::string& password) {
     User* user = findUser(userId);
-    if (user && user->getPassword() == password) {
-        currentUserId = userId;
-        std::cout << "Login successful." << std::endl;
-        return true;
+    if (!user) {
+        std::cout << "User ID not found.\n";
+        return false;
     }
-    std::cout << "Invalid credentials." << std::endl;
-    return false;
+    
+    if (user->getPassword() == password) {
+        currentUserId = userId;
+        std::cout << "Login successful. Welcome, " << user->getName() << "!\n";
+        return true;
+    } else {
+        std::cout << "Incorrect password.\n";
+        return false;
+    }
 }
 
 void Library::logout() {
     currentUserId = 0;
-    std::cout << "Logged out successfully." << std::endl;
+    std::cout << "Logged out successfully.\n";
 }
 
 bool Library::isLoggedIn() const {
@@ -341,15 +378,22 @@ User* Library::getCurrentUser() const {
 
 // ----- Account Operations -----
 
-void Library::displayUserAccount(int userId) const {
-    Account* account = const_cast<Library*>(this)->findAccount(userId);
-    if (account) {
-        account->displayDetails();
-        account->displayBorrowedBooks(books);
-        account->displayBorrowHistory(books);
-    } else {
-        std::cout << "Account not found." << std::endl;
+void Library::displayUserAccount() const {
+    if (!isLoggedIn()) {
+        std::cout << "Please log in first.\n";
+        return;
     }
+
+    int userId = currentUserId;  // Use the logged-in user ID
+    auto it = accounts.find(userId);
+    
+    if (it == accounts.end()) {
+        std::cout << "No account found for this user.\n";
+        return;
+    }
+
+    std::cout << "Account details for " << getCurrentUser()->getName() << ":\n";
+    it->second.displayDetails();
 }
 
 void Library::payFines(int userId) {
@@ -413,9 +457,9 @@ void Library::run() {
                 returnBook(userId, ISBN);
                 break;
             case 6:
-                std::cout << "Enter User ID: ";
-                std::cin >> userId;
-                displayUserAccount(userId);
+                // std::cout << "Enter User ID: ";
+                // std::cin >> userId;
+                displayUserAccount();
                 break;
             case 7:
                 std::cout << "Enter User ID: ";

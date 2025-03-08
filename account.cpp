@@ -1,4 +1,6 @@
 #include "lms.h"
+#include <chrono>
+#include <iomanip>
 
 // Account class implementation
 
@@ -78,10 +80,10 @@ void Account::displayBorrowedBooks(const std::map<std::string, Book>& books) con
             std::cout << "ISBN: " << it->second.getISBN() << std::endl;
             std::cout << "Title: " << it->second.getTitle() << std::endl;
             
-            // Convert time_t to readable format
-            char dueDateStr[26];
-            ctime_r(&it->second.getDueDate(), dueDateStr);
-            std::cout << "Due date: " << dueDateStr << std::endl;
+            // Convert time_t to readable format using chrono
+            auto dueDate = std::chrono::system_clock::from_time_t(it->second.getDueDate());
+            std::time_t dueDateC = std::chrono::system_clock::to_time_t(dueDate);
+            std::cout << "Due date: " << std::put_time(std::localtime(&dueDateC), "%c %Z") << std::endl;
         }
     }
     std::cout << std::endl;

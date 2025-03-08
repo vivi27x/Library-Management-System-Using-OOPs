@@ -1,4 +1,6 @@
 #include "lms.h"
+#include <chrono>
+#include <iomanip>
 
 // Book class implementation
 
@@ -43,15 +45,15 @@ void Book::displayDetails() const {
     std::cout << "Status: " << status << std::endl;
     
     if (status == "Borrowed") {
-        // Convert time_t to readable format
-        char borrowDateStr[26];
-        char dueDateStr[26];
-        ctime_r(&borrowDate, borrowDateStr);
-        ctime_r(&dueDate, dueDateStr);
+        // Convert time_t to readable format using chrono
+        auto borrowDateChrono = std::chrono::system_clock::from_time_t(borrowDate);
+        auto dueDateChrono = std::chrono::system_clock::from_time_t(dueDate);
+        std::time_t borrowDateC = std::chrono::system_clock::to_time_t(borrowDateChrono);
+        std::time_t dueDateC = std::chrono::system_clock::to_time_t(dueDateChrono);
         
         std::cout << "Borrowed by: " << borrowerId << std::endl;
-        std::cout << "Borrow date: " << borrowDateStr;
-        std::cout << "Due date: " << dueDateStr;
+        std::cout << "Borrow date: " << std::put_time(std::localtime(&borrowDateC), "%c %Z") << std::endl;
+        std::cout << "Due date: " << std::put_time(std::localtime(&dueDateC), "%c %Z") << std::endl;
     }
     std::cout << std::endl;
 }
