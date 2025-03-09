@@ -346,7 +346,7 @@ void Library::calculateFines() {
                     int overdueDays = calculateOverdueDays(book->getDueDate(), currentDate);
                     if (overdueDays > 0) {
                         int fine = overdueDays * Student::getFineRate();
-                        account.addFine(fine);
+                        accounts[account.getUserId()].addFine(fine);
                     }
                 }
             }

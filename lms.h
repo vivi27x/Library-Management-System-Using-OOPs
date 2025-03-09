@@ -212,11 +212,11 @@ private:
     int userId;
     vector<string> borrowedBooks; // ISBNs of currently borrowed books
     vector<string> borrowHistory; // ISBNs of previously borrowed books
+    double fines;
+    bool hasPaidFines;
     
     public:
     // Constructors
-    double fines;
-    bool hasPaidFines;
     Account();
     Account(int userId);
 
