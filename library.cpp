@@ -223,7 +223,7 @@ bool Library::borrowBook(int userId, const string& ISBN) {
         return false;
     }
     else if (user->getRole() == "Faculty") {
-        if(account->getBorrowedBooks().size() >= Faculty::getMaxBooks()) {
+        if(account->getBorrowedBooks().size() >= static_cast<size_t>(Faculty::getMaxBooks())) {
             cout << "Faculty members can borrow only " << Faculty::getMaxBooks() << " books at a time." << endl;
             return false;
         }
@@ -237,7 +237,7 @@ bool Library::borrowBook(int userId, const string& ISBN) {
         }
     }
     else if(user->getRole() == "Student") {
-        if(account->getBorrowedBooks().size() >= Student::getMaxBooks()) {
+        if(account->getBorrowedBooks().size() >= static_cast<size_t>(Student::getMaxBooks())) {
             cout << "Students can borrow only " << Student::getMaxBooks() << " books at a time." << endl;
             return false;
         }

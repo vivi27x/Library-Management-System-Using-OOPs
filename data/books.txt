@@ -1,8 +1,98 @@
-Coding Course
-Vivi
-Dolphin
-1987
-2311698720
+Divergent
+Veronica Roth
+Katherine Tegen Books
+2011
+9780062024039
+Available
+0
+0
+0
+Twilight
+Stephenie Meyer
+Little, Brown and Company
+2005
+9780316015844
+Available
+0
+0
+0
+Fifty Shades of Grey
+E.L. James
+Vintage
+2011
+9780345803481
+Available
+0
+0
+0
+The Da Vinci Code
+Dan Brown
+Doubleday
+2003
+9780385504201
+Available
+0
+0
+0
+The Maze Runner
+James Dashner
+Delacorte Press
+2009
+9780385737944
+Available
+0
+0
+0
+The Hunger Games
+Suzanne Collins
+Scholastic Press
+2008
+9780439023481
+Available
+0
+0
+0
+The Fault in Our Stars
+John Green
+Dutton Books
+2012
+9780525478812
+Available
+0
+0
+0
+The Lord of the Rings
+J.R.R. Tolkien
+Allen & Unwin
+1954
+9780544003415
+Available
+0
+0
+0
+A Game of Thrones
+George R.R. Martin
+Bantam Books
+1996
+9780553103540
+Available
+0
+0
+0
+Harry Potter and the Sorcerer's Stone
+J.K. Rowling
+Scholastic
+1997
+9780590353427
+Available
+0
+0
+0
+Zero to One
+Peter Thiel
+Crown Business
+2014
+9780804139298
 Available
 0
 0

@@ -1,5 +1,50 @@
 Librarian
 1001
-Vivi
-vivi@example.com
+Ish Dhingra
+ishdhingra@example.com
 password1
+Faculty
+2001
+Dinesh Kumar Jindal
+dinesh@example.com
+passwordDinesh
+Faculty
+2002
+Lalit Singla
+lalit@example.com
+passwordLalit
+Faculty
+2003
+Manoj Kumar
+manoj@example.com
+passwordManoj
+Student
+3001
+Vivek
+vivek@example.com
+passwordVivek
+Student
+3002
+Pradyun
+pradyun@example.com
+passwordPradyun
+Student
+3003
+Naman
+naman@example.com
+passwordNaman
+Student
+3004
+Ronit
+ronit@example.com
+passwordRonit
+Student
+3005
+Bhawesh
+bhawesh@example.com
+passwordBhawesh
+Student
+3006
+Sumit
+sumit@example.com
+passwordSumit
