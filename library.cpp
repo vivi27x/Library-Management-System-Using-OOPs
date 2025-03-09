@@ -19,6 +19,9 @@ Library::~Library() {
     saveData();                                             // Save data to files before exiting.
     for (auto& pair : users)
         delete pair.second;                                 // Free memory allocated for User objects
+    books.clear();
+    users.clear();
+    accounts.clear();
 }
 
 // Helper methods
@@ -61,15 +64,15 @@ void Library::loadData() {
     if (!accountsFile) cerr << "Warning: accounts.txt not found. Starting with no accounts." << endl;
 
     // Load Books, Users, and Accounts
-    while (booksFile) {
+    while (!booksFile.eof()) {
         Book book = Book::loadFromFile(booksFile);
         if (booksFile) books[book.getISBN()] = book;
     }
-    while (usersFile) {
+    while (!usersFile.eof()) {
         User* user = User::loadFromFile(usersFile);
         if (user) users[user->getId()] = user;
     }
-    while (accountsFile) {
+    while (!accountsFile.eof()) {
         Account account = Account::loadFromFile(accountsFile);
         if (accountsFile) accounts[account.getUserId()] = account;
     }

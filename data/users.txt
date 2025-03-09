@@ -48,3 +48,8 @@ Student
 Sumit
 sumit@example.com
 passwordSumit
+Student
+3007
+Lavneet
+lavneet@example.com
+passwordLavneet

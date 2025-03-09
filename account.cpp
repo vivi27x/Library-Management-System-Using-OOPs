@@ -132,13 +132,14 @@ void Account::saveToFile(ofstream& outFile) const {
 
 Account Account::loadFromFile(ifstream& inFile) {
     Account account;
-    int numBooks;
+    int numBooks = 0;
     string line;
+    account.userId = 0;
+    account.fines = 0.0;
+    int paid = 0;
     
     inFile >> account.userId;
     inFile >> account.fines;
-    
-    int paid;
     inFile >> paid;
     account.hasPaidFines = (paid == 1);
     
