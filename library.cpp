@@ -7,67 +7,26 @@
 #include <iomanip>
 
 // Library class implementation
-
-Library::Library(const std::string& dataDir) : currentUserId(0), dataDirectory(dataDir) {
-    // Create data directory if it doesn't exist
-    std::filesystem::create_directories(dataDirectory);
-    
-    // Load data from files if they exist
-    loadData();
-    
-    // If no data was loaded, add initial data
-    if (books.empty()) {
-        addInitialData();
-    }
+Library::Library(const std::string& dataDir) : currentUserId(0), dataDirectory(dataDir){
+    std::filesystem::create_directories(dataDirectory);     // Create data directory if it doesn't exist.
+    loadData();                                             // Load data from files if they exist.
 }
 
+// Destructor
 Library::~Library() {
-    // Save data to files
-    saveData();
-    
-    // Free memory allocated for User objects
-    for (auto& pair : users) {
-        delete pair.second;
-    }
+    saveData();                                             // Save data to files before exiting.
+    for (auto& pair : users)
+        delete pair.second;                                 // Free memory allocated for User objects
 }
 
 // Helper methods
-// Helper method: Add initial data if files are not present
-void Library::addInitialData() {
-    // // Add books
-    // addBook(Book("Introduction to Algorithms", "Thomas H. Cormen", "MIT Press", 2009, "9780262033848"));
-    // addBook(Book("Clean Code", "Robert C. Martin", "Prentice Hall", 2008, "9780132350884"));
-    // addBook(Book("Design Patterns", "Erich Gamma", "Addison-Wesley", 1994, "9780201633610"));
-    // addBook(Book("The Pragmatic Programmer", "Andrew Hunt", "Addison-Wesley", 1999, "9780201616224"));
-    // addBook(Book("Code Complete", "Steve McConnell", "Microsoft Press", 2004, "9780735619678"));
-    // addBook(Book("Refactoring", "Martin Fowler", "Addison-Wesley", 1999, "9780201485677"));
-    // addBook(Book("Head First Design Patterns", "Eric Freeman", "O'Reilly Media", 2004, "9780596007126"));
-    // addBook(Book("The C Programming Language", "Brian W. Kernighan", "Prentice Hall", 1988, "9780131103627"));
-    // addBook(Book("Effective C++", "Scott Meyers", "Addison-Wesley", 2005, "9780321334879"));
-    // addBook(Book("Programming Pearls", "Jon Bentley", "Addison-Wesley", 1999, "9780201657883"));
-    
-    // // Add users (5 students, 3 faculty, 1 librarian)
-    // // Students
-    // addUser(new Student(1001, "John Smith", "john@example.com", "password1"));
-    // addUser(new Student(1002, "Emily Johnson", "emily@example.com", "password2"));
-    // addUser(new Student(1003, "Michael Brown", "michael@example.com", "password3"));
-    // addUser(new Student(1004, "Jessica Davis", "jessica@example.com", "password4"));
-    // addUser(new Student(1005, "Daniel Wilson", "daniel@example.com", "password5"));
-    
-    // // Faculty
-    // addUser(new Faculty(2001, "Dr. Alan Turing", "turing@example.com", "password6"));
-    // addUser(new Faculty(2002, "Dr. Grace Hopper", "hopper@example.com", "password7"));
-    // addUser(new Faculty(2003, "Dr. Ada Lovelace", "ada@example.com", "password8"));
-    
-    // // Librarian
-    // addUser(new Librarian(3001, "Laura Librarian", "laura@example.com", "password9"));
-    
-    // // Create accounts for each user
-    // for (const auto& pair : users) {
-    //     accounts[pair.first] = Account(pair.first);
-    // }
+void Library::clearScreen() {
+    #ifdef _WIN32
+        system("cls"); // Clear screen for Windows
+    #else
+        std::cout << "\033[2J\033[1;1H"; // Clear screen for Linux and MacOS
+    #endif
 }
-
 void Library::saveData() {
     std::ofstream booksFile(dataDirectory + "/books.txt");
     std::ofstream usersFile(dataDirectory + "/users.txt");
@@ -77,27 +36,19 @@ void Library::saveData() {
         std::cerr << "Error: Unable to open files for saving data." << std::endl;
         return;
     }
-
-    // Save Books
     for (const auto& pair : books) {
         pair.second.saveToFile(booksFile);
     }
-
-    // Save Users
     for (const auto& pair : users) {
         pair.second->saveToFile(usersFile);
     }
-
-    // Save Accounts
     for (const auto& pair : accounts) {
         pair.second.saveToFile(accountsFile);
     }
-
     booksFile.close();
     usersFile.close();
     accountsFile.close();
 }
-
 void Library::loadData() {
     std::ifstream booksFile(dataDirectory + "/books.txt");
     std::ifstream usersFile(dataDirectory + "/users.txt");
@@ -107,35 +58,27 @@ void Library::loadData() {
     if (!usersFile) std::cerr << "Warning: users.txt not found. Starting with no users." << std::endl;
     if (!accountsFile) std::cerr << "Warning: accounts.txt not found. Starting with no accounts." << std::endl;
 
-    // Load Books
+    // Load Books, Users, and Accounts
     while (booksFile) {
         Book book = Book::loadFromFile(booksFile);
         if (booksFile) books[book.getISBN()] = book;
     }
-
-    // Load Users
     while (usersFile) {
         User* user = User::loadFromFile(usersFile);
         if (user) users[user->getId()] = user;
     }
-
-    // Load Accounts
     while (accountsFile) {
         Account account = Account::loadFromFile(accountsFile);
         if (accountsFile) accounts[account.getUserId()] = account;
     }
-
     booksFile.close();
     usersFile.close();
     accountsFile.close();
 }   
-
-
 // Utility: Get current time
 time_t Library::getCurrentDate() const {
     return std::time(nullptr);
 }
-
 // Utility: Format time_t to readable string
 std::string Library::formatDate(time_t date) const {
     auto dateChrono = std::chrono::system_clock::from_time_t(date);
@@ -144,7 +87,6 @@ std::string Library::formatDate(time_t date) const {
     oss << std::put_time(std::localtime(&dateC), "%c %Z");
     return oss.str();
 }
-
 // Utility: Calculate number of overdue days
 int Library::calculateOverdueDays(time_t dueDate, time_t currentDate) const {
     if (currentDate > dueDate)
@@ -160,7 +102,6 @@ void Library::addBook(const Book& book) {
         std::cout << "Access denied. Only librarians can add books.\n";
         return;
     }
-    
     books[book.getISBN()] = book;
     std::cout << "Book added successfully.\n";
 }
@@ -170,7 +111,6 @@ void Library::removeBook(const std::string& ISBN) {
         std::cout << "Access denied. Only librarians can remove books.\n";
         return;
     }
-    
     books.erase(ISBN);
     std::cout << "Book removed successfully.\n";
 }
@@ -187,7 +127,6 @@ void Library::displayAllBooks() const {
     for (const auto& pair : books)
         pair.second.displayDetails();
 }
-
 void Library::searchBooks(const std::string& keyword) const {
     for (const auto& pair : books) {
         if (pair.second.getTitle().find(keyword) != std::string::npos ||
@@ -198,53 +137,49 @@ void Library::searchBooks(const std::string& keyword) const {
     }
 }
 
-
 // ----- User Management -----
-
 void Library::addUser(User* user) {
     if (!isLoggedIn() || getCurrentUser()->getRole() != "Librarian") {
         std::cout << "Access denied. Only librarians can add users.\n";
         return;
     }
-    
+
+    int librarianId = currentUserId; // Store the current librarian's ID
+
     users[user->getId()] = user;
     accounts[user->getId()] = Account(user->getId());
     std::cout << "User added successfully.\n";
+
+    currentUserId = librarianId; // Restore the librarian's ID
 }
-
-
 void Library::removeUser(int userId) {
     if (!isLoggedIn() || getCurrentUser()->getRole() != "Librarian") {
         std::cout << "Access denied. Only librarians can remove users.\n";
         return;
-    }
-    
+    }    
     users.erase(userId);
     accounts.erase(userId);
     std::cout << "User removed successfully.\n";
 }
 void Library::displayAllUsers() const {
     if (!isLoggedIn() || getCurrentUser()->getRole() != "Librarian") {
-        std::cout << "Access denied. Only librarians can remove users.\n";
+        std::cout << "Access denied. Only librarians can display users.\n";
         return;
     }
     for (const auto& pair : users)
         pair.second->displayDetails();
 }
 
-User* Library::findUser(int userId) const {  // Add 'const' here as well
-
+User* Library::findUser(int userId) const { 
     auto it = users.find(userId);
     return (it != users.end()) ? it->second : nullptr;
 }
-
 Book* Library::findBook(const std::string& ISBN) {
     auto it = books.find(ISBN);
     if (it != books.end())
         return &(it->second);
     return nullptr;
 }
-
 Account* Library::findAccount(int userId) {
     auto it = accounts.find(userId);
     if (it != accounts.end())
@@ -253,19 +188,21 @@ Account* Library::findAccount(int userId) {
 }
 
 // ----- Book Operations -----
+
 /*
 • Borrowing Rules:
 • Students and faculty can borrow books based on their role constraints.
 • If a user tries to borrow more than the allowed number of books, the system should
-deny the request.
+  deny the request.
 • If a user has unpaid fines, borrowing new books should not be allowed until the fines
-are cleared.
+  are cleared.
 • The system should provide an option for users to simulate payment of fines.
 • Users can view their total outstanding fines and mark them as paid through a dedi-
-cated menu option.
+  cated menu option.
 • Once the payment is made, the fine amount should reset to zero, and borrowing
-restrictions should be lifted.
+  restrictions should be lifted.
 */
+
 bool Library::borrowBook(int userId, const std::string& ISBN) {
     User* user = findUser(userId);
     Book* book = findBook(ISBN);
@@ -325,19 +262,19 @@ bool Library::borrowBook(int userId, const std::string& ISBN) {
 /*
 • Returning and Updating Rules:
 • Update Book Status:
-Upon the return of a book, its status should be updated to “Available” in the
-system.
+    Upon the return of a book, its status should be updated to “Available” in the
+    system.
 • Fine Calculation:
-∗ For Students:
-    Fine = Days Overdue ×10 rupees/day.
-∗ For Faculty:
-    · No fine for overdue books.
-    · Faculty members cannot borrow additional books if they (a) Have already reached
-      the limit of 5 borrowed books, or (b) Have an overdue book for more than 60
-      days.
+    ∗ For Students:
+        Fine = Days Overdue ×10 rupees/day.
+    ∗ For Faculty:
+        · No fine for overdue books.
+        · Faculty members cannot borrow additional books if they (a) Have already reached
+        the limit of 5 borrowed books, or (b) Have an overdue book for more than 60
+        days.
 • Overdue Check:
-If the book is returned after the borrowing period (15 days for students, 30 days for
-faculty), the system should:
+    If the book is returned after the borrowing period (15 days for students, 30 days for
+    faculty), the system should:
     ∗ Calculate the overdue period.
     ∗ Display to User Side
 • User Account Update:
@@ -345,6 +282,8 @@ faculty), the system should:
     ∗ Add the book to the borrowing history.
     • Borrowing Eligibility:
     ∗ If fines exist, prevent further borrowing until the fine is cleared.
+    ∗ If the user has overdue books, prevent borrowing until the overdue books are
+      returned.
 */
 bool Library::returnBook(int userId, const std::string& ISBN) {
     User* user = findUser(userId);
@@ -361,7 +300,6 @@ bool Library::returnBook(int userId, const std::string& ISBN) {
     book->setStatus("Available");
     
     if (fineApplicable) {
-        // Calculate fine for overdue books (for students)
         int overdueDays = calculateOverdueDays(book->getDueDate(), currentDate);
         if (overdueDays > 0 && user->getRole() == "Student") {
             int fine = overdueDays * Student::getFineRate();
@@ -376,7 +314,6 @@ bool Library::returnBook(int userId, const std::string& ISBN) {
     }
     return true;
 }
-
 void Library::checkOverdueBooks() {
     time_t currentDate = getCurrentDate();
     for (auto& pair : books) {
@@ -390,7 +327,6 @@ void Library::checkOverdueBooks() {
         }
     }
 }
-
 void Library::calculateFines() {
     time_t currentDate = getCurrentDate();
     for (auto& accPair : accounts) {
@@ -414,13 +350,13 @@ void Library::calculateFines() {
 }
 
 // ----- Authentication -----
+
 bool Library::login(int userId, const std::string& password) {
     User* user = findUser(userId);
     if (!user) {
         std::cout << "User ID not found.\n";
         return false;
     }
-    
     if (user->getPassword() == password) {
         currentUserId = userId;
         std::cout << "Login successful. Welcome, " << user->getName() << "!\n";
@@ -430,37 +366,31 @@ bool Library::login(int userId, const std::string& password) {
         return false;
     }
 }
-
 void Library::logout() {
     currentUserId = 0;
+    clearScreen();
     std::cout << "Logged out successfully.\n";
 }
-
 bool Library::isLoggedIn() const {
     return currentUserId != 0;
 }
-
 User* Library::getCurrentUser() const {
     return findUser(currentUserId);
 }
 
-
 // ----- Account Operations -----
-
 void Library::displayUserAccount() const {
     if (!isLoggedIn()) {
         std::cout << "Please log in first.\n";
         return;
     }
-
     int userId = currentUserId;  // Use the logged-in user ID
     auto it = accounts.find(userId);
-    
+
     if (it == accounts.end()) {
         std::cout << "No account found for this user.\n";
         return;
     }
-
     std::cout << "Account details for " << getCurrentUser()->getName() << ":\n";
     it->second.displayDetails();
 }
@@ -476,20 +406,20 @@ void Library::payFines(int userId) {
 }
 
 // ----- Run the Library System (Simple CLI) -----
-void Library::run() {
+void Library::run(){
     bool running = true;
     std::string input;
-    
-    while (running) {
-        if (!isLoggedIn()) {
+
+    while(running) {
+        // clearScreen();
+        if (!isLoggedIn()){
             displayLoginMenu();
-        } else {
+        } 
+        else{
             User* currentUser = getCurrentUser();
             std::string role = currentUser->getRole();
-            
             clearScreen();
             displayHeader();
-            
             if (role == "Student") {
                 displayStudentMenu();
             } else if (role == "Faculty") {
@@ -502,25 +432,41 @@ void Library::run() {
         std::cout << "\nEnter your choice (or 'q' to quit): ";
         std::getline(std::cin, input);
         
-        if (input == "q" || input == "Q") {
+        if (input == "q" || input == "Q"){
             running = false;
-        } else {
+        }
+        else if(isLoggedIn()){
+            bool choiceflag = true;
+            User* currentUser = getCurrentUser();
+            std::string role = currentUser->getRole();
+            if(role == "Librarian"){
+                processLibrarianMenuChoice(input);
+            }
+            else{
+            choiceflag = processMenuChoice(input);
+            } 
+            if(!choiceflag){
+                running = false;
+            }
+        }
+        else{
             processMenuChoice(input);
         }
     }
-    
     // Save data before exiting
     saveData();
     std::cout << "Thank you for using the Library Management System. Goodbye!\n";
+
 }
 
-void Library::clearScreen() {
-    #ifdef _WIN32
-        system("cls");
-    #else
-        system("clear");
-    #endif
-}
+// void Library::clearScreen() {
+//     // #ifdef _WIN32
+//     //     system("cls");
+//     // #else
+//     //     system("clear");
+//     // #endif
+//     system("clear");
+// }
 
 void Library::displayHeader() {
     std::cout << "==================================================\n";
@@ -544,6 +490,7 @@ void Library::displayHeader() {
 }
 
 void Library::displayLoginMenu() {
+    displayHeader();
     std::cout << "\n1. Login\n";
     std::cout << "2. Exit\n";
 }
@@ -603,174 +550,218 @@ void Library::displaySystemReportsMenu() {
     std::cout << "4. Back to main menu\n";
 }
 
-void Library::processMenuChoice(const std::string& choice) {
-    if (!isLoggedIn()) {
+bool Library::processMenuChoice(const std::string& choice){
+    if (!isLoggedIn()){
+        if(choice == "2"){
+            std::cout << "Exiting...\n";
+            return false;
+        }
         processLoginMenuChoice(choice);
-        return;
+        return true;
     }
-    
     User* currentUser = getCurrentUser();
     std::string role = currentUser->getRole();
-    
-    static std::string submenu = "main"; // To track which submenu we're in
     
     if (role == "Student") {
         processStudentMenuChoice(choice);
     } else if (role == "Faculty") {
         processFacultyMenuChoice(choice);
     } else if (role == "Librarian") {
-        // For librarian, we need to track submenus
-        if (submenu == "main") {
-            if (choice == "1") { // Books management
-                submenu = "books";
-                clearScreen();
-                displayHeader();
-                displayBooksManagementMenu();
-            } else if (choice == "2") { // User management
-                submenu = "users";
-                clearScreen();
-                displayHeader();
-                displayUserManagementMenu();
-            } else if (choice == "3") { // System reports
-                submenu = "reports";
-                clearScreen();
-                displayHeader();
-                displaySystemReportsMenu();
-            } else if (choice == "4") { // Logout
-                logout();
-                submenu = "main";
-            } else {
-                std::cout << "Invalid choice. Please try again.\n";
-            }
-        } else if (submenu == "books") {
-            processLibrarianBooksMenuChoice(choice, submenu);
-        } else if (submenu == "users") {
-            processLibrarianUsersMenuChoice(choice, submenu);
-        } else if (submenu == "reports") {
-            processLibrarianReportsMenuChoice(choice, submenu);
-        }
+        processLibrarianMenuChoice(choice);
     }
+    return true;
+}
+
+void Library::processLibrarianMenuChoice(const std::string& choice) {
+        if (choice == "1") { // Books management
+            clearScreen();
+            displayHeader();
+            displayBooksManagementMenu();
+            std::string booksChoice;
+            std::cout << "\nEnter your choice: ";
+            std::getline(std::cin, booksChoice);
+            processLibrarianBooksMenuChoice(booksChoice);
+        } else if (choice == "2") { // User management
+            clearScreen();
+            displayHeader();
+            displayUserManagementMenu();
+            std::string usersChoice;
+            std::cout << "\nEnter your choice: ";
+            std::getline(std::cin, usersChoice);
+            processLibrarianUsersMenuChoice(usersChoice);
+        } else if (choice == "3") { // System reports
+            clearScreen();
+            displayHeader();
+            displaySystemReportsMenu();
+            std::string reportsChoice;
+            std::cout << "\nEnter your choice: ";
+            std::getline(std::cin, reportsChoice);
+            processLibrarianReportsMenuChoice(reportsChoice);
+        } else if (choice == "4") { // Logout
+            logout();
+        } else {
+            std::cout << "Invalid choice. Please try again.\n";
+        }
+    // } else if (submenu == "books") {
+    //     processLibrarianBooksMenuChoice(choice, submenu);
+    // } else if (submenu == "users") {
+    //     processLibrarianUsersMenuChoice(choice, submenu);
+    // } else if (submenu == "reports") {
+    //     processLibrarianReportsMenuChoice(choice, submenu);
+    // }
 }
 
 void Library::processLoginMenuChoice(const std::string& choice) {
-    if (choice == "1") { // Login
+    if(choice == "1") { // Login
         int userId;
         std::string password;
         
         std::cout << "Enter user ID: ";
-        std::cin >> userId;
+        while (!(std::cin >> userId)) {
+            std::cin.clear(); // Clear the error flag
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard invalid input
+            std::cout << "Invalid input. Please enter a valid user ID: ";
+        }
         std::cin.ignore(); // Clear newline
-        
         std::cout << "Enter password: ";
         std::getline(std::cin, password);
-        
-        login(userId, password);
-    } else if (choice != "2") { // Not exit
+        bool loginflag = login(userId, password);
+        if(!loginflag){
+            clearScreen();
+            std::cout << "Invalid user ID or password. Please try again.\n";
+        }
+    } 
+    else if(choice != "2"){ // Not exit
         std::cout << "Invalid choice. Please try again.\n";
+    }
+    else{
+        std::cout << "Exiting...\n";
     }
 }
 
 void Library::processStudentMenuChoice(const std::string& choice) {
-    if (choice == "1") { // Browse books
-        clearScreen();
-        displayHeader();
-        std::cout << "\nALL BOOKS:\n";
-        displayAllBooks();
-        std::cout << "\nPress Enter to continue...";
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    } else if (choice == "2") { // Search books
-        std::string keyword;
-        std::cout << "Enter search keyword: ";
-        std::getline(std::cin, keyword);
-        
-        clearScreen();
-        displayHeader();
-        std::cout << "\nSEARCH RESULTS FOR '" << keyword << "':\n";
-        searchBooks(keyword);
-        std::cout << "\nPress Enter to continue...";
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    } else if (choice == "3") { // My account
-        clearScreen();
-        displayHeader();
-        displayUserAccount();
-        std::cout << "\nPress Enter to continue...";
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    } else if (choice == "4") { // Borrow a book
-        std::string ISBN;
-        std::cout << "Enter ISBN of the book to borrow: ";
-        std::getline(std::cin, ISBN);
-        
-        borrowBook(getCurrentUser()->getId(), ISBN);
-        std::cout << "\nPress Enter to continue...";
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    } else if (choice == "5") { // Return a book
-        std::string ISBN;
-        std::cout << "Enter ISBN of the book to return: ";
-        std::getline(std::cin, ISBN);
-        
-        returnBook(getCurrentUser()->getId(), ISBN);
-        std::cout << "\nPress Enter to continue...";
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    } else if (choice == "6") { // Pay fines
-        payFines(getCurrentUser()->getId());
-        std::cout << "\nPress Enter to continue...";
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    } else if (choice == "7") { // Logout
-        logout();
-    } else {
-        std::cout << "Invalid choice. Please try again.\n";
+    switch (std::stoi(choice)) {
+        case 1: // Browse books
+            clearScreen();
+            displayHeader();
+            std::cout << "\nALL BOOKS:\n";
+            displayAllBooks();
+            std::cout << "\nPress Enter to continue...";
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            break;
+        case 2: { // Search books
+            std::string keyword;
+            std::cout << "Enter search keyword: ";
+            std::getline(std::cin, keyword);
+            clearScreen();
+            displayHeader();
+            std::cout << "\nSEARCH RESULTS FOR '" << keyword << "':\n";
+            searchBooks(keyword);
+            std::cout << "\nPress Enter to continue...";
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            break;
+        }
+        case 3: // My account
+            clearScreen();
+            displayHeader();
+            displayUserAccount();
+            std::cout << "\nPress Enter to continue...";
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            break;
+        case 4: { // Borrow a book
+            std::string ISBN;
+            std::cout << "Enter ISBN of the book to borrow: ";
+            std::getline(std::cin, ISBN);
+            
+            borrowBook(getCurrentUser()->getId(), ISBN);
+            std::cout << "\nPress Enter to continue...";
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            break;
+        }
+        case 5: { // Return a book
+            std::string ISBN;
+            std::cout << "Enter ISBN of the book to return: ";
+            std::getline(std::cin, ISBN);
+            
+            returnBook(getCurrentUser()->getId(), ISBN);
+            std::cout << "\nPress Enter to continue...";
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            break;
+        }
+        case 6: // Pay fines
+            payFines(getCurrentUser()->getId());
+            std::cout << "\nPress Enter to continue...";
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            break;
+        case 7: // Logout
+            logout();
+            break;
+        default:
+            std::cout << "Invalid choice. Please try again.\n";
+            break;
     }
 }
 
 void Library::processFacultyMenuChoice(const std::string& choice) {
-    if (choice == "1") { // Browse books
-        clearScreen();
-        displayHeader();
-        std::cout << "\nALL BOOKS:\n";
-        displayAllBooks();
-        std::cout << "\nPress Enter to continue...";
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    } else if (choice == "2") { // Search books
-        std::string keyword;
-        std::cout << "Enter search keyword: ";
-        std::getline(std::cin, keyword);
-        
-        clearScreen();
-        displayHeader();
-        std::cout << "\nSEARCH RESULTS FOR '" << keyword << "':\n";
-        searchBooks(keyword);
-        std::cout << "\nPress Enter to continue...";
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    } else if (choice == "3") { // My account
-        clearScreen();
-        displayHeader();
-        displayUserAccount();
-        std::cout << "\nPress Enter to continue...";
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    } else if (choice == "4") { // Borrow a book
-        std::string ISBN;
-        std::cout << "Enter ISBN of the book to borrow: ";
-        std::getline(std::cin, ISBN);
-        
-        borrowBook(getCurrentUser()->getId(), ISBN);
-        std::cout << "\nPress Enter to continue...";
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    } else if (choice == "5") { // Return a book
-        std::string ISBN;
-        std::cout << "Enter ISBN of the book to return: ";
-        std::getline(std::cin, ISBN);
-        
-        returnBook(getCurrentUser()->getId(), ISBN);
-        std::cout << "\nPress Enter to continue...";
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    } else if (choice == "6") { // Logout
-        logout();
-    } else {
-        std::cout << "Invalid choice. Please try again.\n";
+    switch (std::stoi(choice)) {
+        case 1: // Browse books
+            clearScreen();
+            displayHeader();
+            std::cout << "\nALL BOOKS:\n";
+            displayAllBooks();
+            std::cout << "\nPress Enter to continue...";
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            break;
+        case 2: { // Search books
+            std::string keyword;
+            std::cout << "Enter search keyword: ";
+            std::getline(std::cin, keyword);
+            
+            clearScreen();
+            displayHeader();
+            std::cout << "\nSEARCH RESULTS FOR '" << keyword << "':\n";
+            searchBooks(keyword);
+            std::cout << "\nPress Enter to continue...";
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            break;
+        }
+        case 3: // My account
+            clearScreen();
+            displayHeader();
+            displayUserAccount();
+            std::cout << "\nPress Enter to continue...";
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            break;
+        case 4: { // Borrow a book
+            std::string ISBN;
+            std::cout << "Enter ISBN of the book to borrow: ";
+            std::getline(std::cin, ISBN);
+            
+            borrowBook(getCurrentUser()->getId(), ISBN);
+            std::cout << "\nPress Enter to continue...";
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            break;
+        }
+        case 5: { // Return a book
+            std::string ISBN;
+            std::cout << "Enter ISBN of the book to return: ";
+            std::getline(std::cin, ISBN);
+            
+            returnBook(getCurrentUser()->getId(), ISBN);
+            std::cout << "\nPress Enter to continue...";
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            break;
+        }
+        case 6: // Logout
+            logout();
+            break;
+        default:
+            std::cout << "Invalid choice. Please try again.\n";
+            break;
     }
 }
 
-void Library::processLibrarianBooksMenuChoice(const std::string& choice, std::string& submenu) {
+void Library::processLibrarianBooksMenuChoice(const std::string& choice) {
     if (choice == "1") { // Display all books
         clearScreen();
         displayHeader();
@@ -856,13 +847,12 @@ void Library::processLibrarianBooksMenuChoice(const std::string& choice, std::st
         std::cout << "\nPress Enter to continue...";
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     } else if (choice == "6") { // Back to main menu
-        submenu = "main";
     } else {
         std::cout << "Invalid choice. Please try again.\n";
     }
 }
 
-void Library::processLibrarianUsersMenuChoice(const std::string& choice, std::string& submenu) {
+void Library::processLibrarianUsersMenuChoice(const std::string& choice) {
     if (choice == "1") { // Display all users
         clearScreen();
         displayHeader();
@@ -870,7 +860,8 @@ void Library::processLibrarianUsersMenuChoice(const std::string& choice, std::st
         displayAllUsers();
         std::cout << "\nPress Enter to continue...";
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    } else if (choice == "2") { // Add a new user
+    } 
+    else if (choice == "2") { // Add a new user
         int id, userType;
         std::string name, email, password;
         
@@ -886,7 +877,7 @@ void Library::processLibrarianUsersMenuChoice(const std::string& choice, std::st
         
         std::cout << "Enter password: ";
         std::getline(std::cin, password);
-        
+
         std::cout << "Select user type:\n";
         std::cout << "1. Student\n";
         std::cout << "2. Faculty\n";
@@ -927,13 +918,12 @@ void Library::processLibrarianUsersMenuChoice(const std::string& choice, std::st
         std::cout << "\nPress Enter to continue...";
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     } else if (choice == "4") { // Back to main menu
-        submenu = "main";
     } else {
         std::cout << "Invalid choice. Please try again.\n";
     }
 }
 
-void Library::processLibrarianReportsMenuChoice(const std::string& choice, std::string& submenu) {
+void Library::processLibrarianReportsMenuChoice(const std::string& choice) {
     if (choice == "1") { // Overdue books report
         clearScreen();
         displayHeader();
@@ -973,7 +963,7 @@ void Library::processLibrarianReportsMenuChoice(const std::string& choice, std::
         std::cout << "\nPress Enter to continue...";
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     } else if (choice == "4") { // Back to main menu
-        submenu = "main";
+        // submenu = "main";
     } else {
         std::cout << "Invalid choice. Please try again.\n";
     }

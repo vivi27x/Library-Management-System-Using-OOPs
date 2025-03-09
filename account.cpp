@@ -1,9 +1,6 @@
 #include "lms.h"
 #include <chrono>
 #include <iomanip>
-
-
-
 /*
 Account
 Create an Account class to track user activity. Each user has one account. The account must:
@@ -37,7 +34,6 @@ void Account::setHasPaidFines(bool paid) { this->hasPaidFines = paid; }
 void Account::addBorrowedBook(const std::string& ISBN) {
     borrowedBooks.push_back(ISBN);
 }
-
 void Account::removeBorrowedBook(const std::string& ISBN) {
     for (auto it = borrowedBooks.begin(); it != borrowedBooks.end(); ++it) {
         if (*it == ISBN) {
@@ -46,21 +42,18 @@ void Account::removeBorrowedBook(const std::string& ISBN) {
         }
     }
 }
-
 void Account::addToBorrowHistory(const std::string& ISBN) {
     // Add to history only if it's not already there
     if (std::find(borrowHistory.begin(), borrowHistory.end(), ISBN) == borrowHistory.end()) {
         borrowHistory.push_back(ISBN);
     }
 }
-
 void Account::addFine(double amount) {
     fines += amount;
     if (fines > 0) {
         hasPaidFines = false;
     }
 }
-
 void Account::payFines() {
     fines = 0;
     hasPaidFines = true;
@@ -75,7 +68,6 @@ void Account::displayDetails() const {
     std::cout << "Fines paid: " << (hasPaidFines ? "Yes" : "No") << std::endl;
     std::cout << std::endl;
 }
-
 void Account::displayBorrowedBooks(const std::map<std::string, Book>& books) const {
     if (borrowedBooks.empty()) {
         std::cout << "No books currently borrowed." << std::endl;
@@ -99,7 +91,6 @@ void Account::displayBorrowedBooks(const std::map<std::string, Book>& books) con
     }
     std::cout << std::endl;
 }
-
 void Account::displayBorrowHistory(const std::map<std::string, Book>& books) const {
     if (borrowHistory.empty()) {
         std::cout << "No borrowing history." << std::endl;

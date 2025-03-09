@@ -10,9 +10,6 @@
 #include <iomanip>
 #include <sstream>
 #include <algorithm>
-
-
-
 /*
 Classes:
 • Create at least four classes: User, Book, Account, and Library.
@@ -29,13 +26,7 @@ transactions.
 • When the program starts, load data from files to initialize the library system.
 • When the program shuts down, save the current state of the library system back to files.
 • Use appropriate file handling techniques to serialize and deserialize the data.
-In the main code() first build the library with at least 10 books, 5 students , 3 faculty and 1 librarian.
-Ensure that permissions to access methods are granted based on the role of the user account in Account
-class.
-The classes suggested here are just exemplary. Feel free to be a bit creative by adding your own data
-members or member functions such that the system is implemented in a more efficient way.
 */
-
 
 // Forward declarations
 class Book;
@@ -46,7 +37,6 @@ class Librarian;
 class Account;
 class Library;
 
-// Book class to represent books in the library
 class Book {
 private:
     std::string title;
@@ -278,13 +268,14 @@ private:
     void displayBooksManagementMenu();
     void displayUserManagementMenu();
     void displaySystemReportsMenu();
-    void processMenuChoice(const std::string& choice);
+    bool processMenuChoice(const std::string& choice);
     void processLoginMenuChoice(const std::string& choice);
     void processStudentMenuChoice(const std::string& choice);
     void processFacultyMenuChoice(const std::string& choice);
-    void processLibrarianBooksMenuChoice(const std::string& choice, std::string& submenu);
-    void processLibrarianUsersMenuChoice(const std::string& choice, std::string& submenu);
-    void processLibrarianReportsMenuChoice(const std::string& choice, std::string& submenu);
+    void processLibrarianMenuChoice(const std::string& choice);
+    void processLibrarianBooksMenuChoice(const std::string& choice);
+    void processLibrarianUsersMenuChoice(const std::string& choice);
+    void processLibrarianReportsMenuChoice(const std::string& choice);
     // Helper methods
     void addInitialData();
     void saveData();

@@ -1,7 +1,6 @@
 #include "lms.h"
 #include <chrono>
 #include <iomanip>
-
 // Book class implementation
 /*
 Books
@@ -13,11 +12,9 @@ Constraints:
 • Start with at least 5 books in the system.
 • Books can only be borrowed if their status is ”Available.”
 */
-
 Book::Book() : year(0), borrowerId(0), borrowDate(0), dueDate(0) {
     status = "Available";
 }
-
 Book::Book(const std::string& title, const std::string& author, const std::string& publisher, int year, const std::string& ISBN)
     : title(title), author(author), publisher(publisher), year(year), ISBN(ISBN), borrowerId(0), borrowDate(0), dueDate(0) {
     status = "Available";

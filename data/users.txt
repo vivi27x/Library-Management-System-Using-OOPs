@@ -1,5 +1,5 @@
-Student
+Librarian
 1001
-John Smith
-john@example.com
+Vivi
+vivi@example.com
 password1
