@@ -1,44 +1,45 @@
 #include "lms.h"
+using namespace std;
 // User class implementation
 User::User() : id(0) {}
-User::User(int id, const std::string& name, const std::string& email, const std::string& password, const std::string& role)
+User::User(int id, const string& name, const string& email, const string& password, const string& role)
     : id(id), name(name), email(email), password(password), role(role) {}
 
 // Getters
 int User::getId() const { return id; }
-std::string User::getName() const { return name; }
-std::string User::getEmail() const { return email; }
-std::string User::getPassword() const { return password; }
-std::string User::getRole() const { return role; }
+string User::getName() const { return name; }
+string User::getEmail() const { return email; }
+string User::getPassword() const { return password; }
+string User::getRole() const { return role; }
 
 // Setters
 void User::setId(int id) { this->id = id; }
-void User::setName(const std::string& name) { this->name = name; }
-void User::setEmail(const std::string& email) { this->email = email; }
-void User::setPassword(const std::string& password) { this->password = password; }
-void User::setRole(const std::string& role) { this->role = role; }
+void User::setName(const string& name) { this->name = name; }
+void User::setEmail(const string& email) { this->email = email; }
+void User::setPassword(const string& password) { this->password = password; }
+void User::setRole(const string& role) { this->role = role; }
 
 // Display user details
 void User::displayDetails() const {
-    std::cout << "ID: " << id << std::endl;
-    std::cout << "Name: " << name << std::endl;
-    std::cout << "Email: " << email << std::endl;
-    std::cout << "Role: " << role << std::endl;
-    std::cout << std::endl;
+    cout << "ID: " << id << endl;
+    cout << "Name: " << name << endl;
+    cout << "Email: " << email << endl;
+    cout << "Role: " << role << endl;
+    cout << endl;
 }
 
 // File I/O
-void User::saveToFile(std::ofstream& outFile) const {
-    outFile << role << std::endl;
-    outFile << id << std::endl;
-    outFile << name << std::endl;
-    outFile << email << std::endl;
-    outFile << password << std::endl;
+void User::saveToFile(ofstream& outFile) const {
+    outFile << role << endl;
+    outFile << id << endl;
+    outFile << name << endl;
+    outFile << email << endl;
+    outFile << password << endl;
 }
 
-User* User::loadFromFile(std::ifstream& inFile) {
-    std::string role;
-    std::getline(inFile, role);
+User* User::loadFromFile(ifstream& inFile) {
+    string role;
+    getline(inFile, role);
     
     if (role == "Student") {
         return Student::loadFromFile(inFile);
@@ -54,12 +55,12 @@ User* User::loadFromFile(std::ifstream& inFile) {
 // Student class implementation
 Student::Student() : User(0, "", "", "", "Student") {}
 
-Student::Student(int id, const std::string& name, const std::string& email, const std::string& password)
+Student::Student(int id, const string& name, const string& email, const string& password)
     : User(id, name, email, password, "Student") {}
 
 bool Student::borrowBook(Book& book, time_t currentDate) {
     if (book.getStatus() != "Available") {
-        std::cout << "Book is not available for borrowing." << std::endl;
+        cout << "Book is not available for borrowing." << endl;
         return false;
     }
     book.setStatus("Borrowed");
@@ -70,7 +71,7 @@ bool Student::borrowBook(Book& book, time_t currentDate) {
 }
 bool Student::returnBook(Book& book, time_t currentDate) {
     if (book.getStatus() != "Borrowed" || book.getBorrowerId() != getId()) {
-        std::cout << "This book was not borrowed by you." << std::endl;
+        cout << "This book was not borrowed by you." << endl;
         return false;
     }   
     // Calculate overdue days
@@ -101,30 +102,30 @@ int Student::getMaxBooks() {
     return MAX_BOOKS;
 }
 
-void Student::saveToFile(std::ofstream& outFile) const {
+void Student::saveToFile(ofstream& outFile) const {
     User::saveToFile(outFile);
 }
 
-Student* Student::loadFromFile(std::ifstream& inFile) {
+Student* Student::loadFromFile(ifstream& inFile) {
     int id;
-    std::string name, email, password;
+    string name, email, password;
     inFile >> id;
     inFile.ignore(); // Ignore newline after id
-    std::getline(inFile, name);
-    std::getline(inFile, email);
-    std::getline(inFile, password);
+    getline(inFile, name);
+    getline(inFile, email);
+    getline(inFile, password);
     return new Student(id, name, email, password);
 }
 
 // Faculty class implementation
 Faculty::Faculty() : User(0, "", "", "", "Faculty") {}
 
-Faculty::Faculty(int id, const std::string& name, const std::string& email, const std::string& password)
+Faculty::Faculty(int id, const string& name, const string& email, const string& password)
     : User(id, name, email, password, "Faculty") {}
 
 bool Faculty::borrowBook(Book& book, time_t currentDate) {
     if (book.getStatus() != "Available") {
-        std::cout << "Book is not available for borrowing." << std::endl;
+        cout << "Book is not available for borrowing." << endl;
         return false;
     }
     book.setStatus("Borrowed");
@@ -136,7 +137,7 @@ bool Faculty::borrowBook(Book& book, time_t currentDate) {
 
 bool Faculty::returnBook(Book& book, time_t currentDate) {
     if (book.getStatus() != "Borrowed" || book.getBorrowerId() != getId()) {
-        std::cout << "This book was not borrowed by you." << std::endl;
+        cout << "This book was not borrowed by you." << endl;
         return false;
     }
     // Update book status
@@ -157,19 +158,19 @@ int Faculty::getMaxBooks() {
 int Faculty::getMaxOverdueDays() {
     return MAX_OVERDUE_DAYS;
 }
-void Faculty::saveToFile(std::ofstream& outFile) const {
+void Faculty::saveToFile(ofstream& outFile) const {
     User::saveToFile(outFile);
 }
 
-Faculty* Faculty::loadFromFile(std::ifstream& inFile) {
+Faculty* Faculty::loadFromFile(ifstream& inFile) {
     int id;
-    std::string name, email, password;
+    string name, email, password;
     
     inFile >> id;
     inFile.ignore(); // Ignore newline after id
-    std::getline(inFile, name);
-    std::getline(inFile, email);
-    std::getline(inFile, password);
+    getline(inFile, name);
+    getline(inFile, email);
+    getline(inFile, password);
     
     return new Faculty(id, name, email, password);
 }
@@ -177,29 +178,29 @@ Faculty* Faculty::loadFromFile(std::ifstream& inFile) {
 // Librarian class implementation
 Librarian::Librarian() : User(0, "", "", "", "Librarian") {}
 
-Librarian::Librarian(int id, const std::string& name, const std::string& email, const std::string& password)
+Librarian::Librarian(int id, const string& name, const string& email, const string& password)
     : User(id, name, email, password, "Librarian") {}
 
 bool Librarian::borrowBook(Book& book, time_t currentDate) {
-    std::cout << "Librarians cannot borrow books." << std::endl;
+    cout << "Librarians cannot borrow books." << endl;
     return false;
 }
 bool Librarian::returnBook(Book& book, time_t currentDate) {
-    std::cout << "Librarians cannot return books." << std::endl;
+    cout << "Librarians cannot return books." << endl;
     return false;
 }
-void Librarian::saveToFile(std::ofstream& outFile) const {
+void Librarian::saveToFile(ofstream& outFile) const {
     User::saveToFile(outFile);
 }
-Librarian* Librarian::loadFromFile(std::ifstream& inFile) {
+Librarian* Librarian::loadFromFile(ifstream& inFile) {
     int id;
-    std::string name, email, password;
+    string name, email, password;
     
     inFile >> id;
     inFile.ignore(); // Ignore newline after id
-    std::getline(inFile, name);
-    std::getline(inFile, email);
-    std::getline(inFile, password);
+    getline(inFile, name);
+    getline(inFile, email);
+    getline(inFile, password);
     
     return new Librarian(id, name, email, password);
 }

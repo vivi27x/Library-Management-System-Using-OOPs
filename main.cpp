@@ -9,7 +9,7 @@ class.
 The classes suggested here are just exemplary. Feel free to be a bit creative by adding your own data
 members or member functions such that the system is implemented in a more efficient way.
 */
-
+using namespace std;
 int main() {
     Library library;
     library.run(); // Start interactive menu
