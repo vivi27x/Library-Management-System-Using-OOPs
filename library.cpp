@@ -92,10 +92,10 @@ string Library::formatDate(time_t date) const {
     oss << put_time(localtime(&dateC), "%c %Z");
     return oss.str();
 }
-// Utility: Calculate number of overdue days
+// Utility: Calculate number of overdue days (simulated as minutes for testing)
 int Library::calculateOverdueDays(time_t dueDate, time_t currentDate) const {
     if (currentDate > dueDate)
-        return (currentDate - dueDate) / (24 * 60 * 60);
+        return (currentDate - dueDate) / 60; // Simulate days as minutes
     return 0;
 }
 
@@ -506,7 +506,9 @@ void Library::displayStudentMenu() {
     cout << "3. My account\n";
     cout << "4. Borrow a book\n";
     cout << "5. Return a book\n";
-    cout << "6. Logout\n"; // Removed "Pay fines" option
+    cout << "6. See Borrow History\n";
+    cout << "7. See Due Books\n";
+    cout << "8. Logout\n";
 }
 
 void Library::displayFacultyMenu() {
@@ -516,7 +518,9 @@ void Library::displayFacultyMenu() {
     cout << "3. My account\n";
     cout << "4. Borrow a book\n";
     cout << "5. Return a book\n";
-    cout << "6. Logout\n";
+    cout << "6. See Borrow History\n";
+    cout << "7. See Due Books\n";
+    cout << "8. Logout\n";
 }
 
 void Library::displayLibrarianMenu() {
@@ -550,8 +554,7 @@ void Library::displaySystemReportsMenu() {
     cout << "\nSYSTEM REPORTS\n";
     cout << "1. Overdue books report\n";
     cout << "2. User fines report\n";
-    cout << "3. Most borrowed books\n";
-    cout << "4. Back to main menu\n";
+    cout << "3. Back to main menu\n";
 }
 
 void Library::processLibrarianMenuChoice(const string& choice) {
@@ -673,7 +676,48 @@ void Library::processStudentMenuChoice(const string& choice) {
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             break;
         }
-        case 6: // Logout
+        case 6: { // See Borrow History
+            clearScreen();
+            displayHeader();
+            cout << "BORROW HISTORY:\n";
+            Account* account = findAccount(getCurrentUser()->getId());
+            if (account) {
+                for (const string& isbn : account->getBorrowHistory()) {
+                    Book* book = findBook(isbn);
+                    if (book) {
+                        cout << "ISBN: " << book->getISBN() << endl;
+                        cout << "Title: " << book->getTitle() << endl;
+                        cout << endl;
+                    }
+                }
+            }
+            cout << "\nPress Enter to continue...";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            break;
+        }
+        case 7: { // See Due Books
+            clearScreen();
+            displayHeader();
+            cout << "DUE BOOKS:\n";
+            Account* account = findAccount(getCurrentUser()->getId());
+            if (account) {
+                for (const string& isbn : account->getBorrowedBooks()) {
+                    Book* book = findBook(isbn);
+                    if (book->getStatus()=="Borrowed") {
+                        cout << "ISBN: " << book->getISBN() << endl;
+                        cout << "Title: " << book->getTitle() << endl;
+                        cout << "Borrowed on: " << formatDate(book->getBorrowDate()) << endl;
+                        cout << "Due date: " << formatDate(book->getDueDate()) << endl;
+                        cout << "Overdue by: " << calculateOverdueDays(book->getDueDate(), getCurrentDate()) << " days\n";
+                        cout << endl;
+                    }
+                }
+            }
+            cout << "\nPress Enter to continue...";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            break;
+        }
+        case 8: // Logout
             logout();
             break;
         default:
@@ -732,7 +776,48 @@ void Library::processFacultyMenuChoice(const string& choice) {
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             break;
         }
-        case 6: // Logout
+        case 6: { // See Borrow History
+            clearScreen();
+            displayHeader();
+            cout << "BORROW HISTORY:\n";
+            Account* account = findAccount(getCurrentUser()->getId());
+            if (account) {
+                for (const string& isbn : account->getBorrowHistory()) {
+                    Book* book = findBook(isbn);
+                    if (book) {
+                        cout << "ISBN: " << book->getISBN() << endl;
+                        cout << "Title: " << book->getTitle() << endl;
+                        cout << endl;
+                    }
+                }
+            }
+            cout << "\nPress Enter to continue...";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            break;
+        }
+        case 7: { // See Due Books
+            clearScreen();
+            displayHeader();
+            cout << "DUE BOOKS:\n";
+            Account* account = findAccount(getCurrentUser()->getId());
+            if (account) {
+                for (const string& isbn : account->getBorrowedBooks()) {
+                    Book* book = findBook(isbn);
+                    if (book->getStatus()=="Borrowed") {
+                        cout << "ISBN: " << book->getISBN() << endl;
+                        cout << "Title: " << book->getTitle() << endl;
+                        cout << "Borrowed on: " << formatDate(book->getBorrowDate()) << endl;
+                        cout << "Due date: " << formatDate(book->getDueDate()) << endl;
+                        cout << "Overdue by: " << calculateOverdueDays(book->getDueDate(), getCurrentDate()) << " days\n";
+                        cout << endl;
+                    }
+                }
+            }
+            cout << "\nPress Enter to continue...";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            break;
+        }
+        case 8: // Logout
             logout();
             break;
         default:
@@ -934,17 +1019,10 @@ void Library::processLibrarianReportsMenuChoice(const string& choice) {
         
         cout << "\nPress Enter to continue...";
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    } else if (choice == "3") { // Most borrowed books
-        // This would require additional tracking in the Book class
-        clearScreen();
-        displayHeader();
-        cout << "\nMOST BORROWED BOOKS REPORT:\n";
-        cout << "This feature is not yet implemented.\n";
-        cout << "\nPress Enter to continue...";
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    } else if (choice == "4") { // Back to main menu
-        // submenu = "main";
-    } else {
+    }
+    else if (choice == "3") { // Back to main menu
+    }
+    else{
         cout << "Invalid choice. Please try again.\n";
     }
 }

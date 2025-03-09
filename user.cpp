@@ -74,11 +74,11 @@ bool Student::returnBook(Book& book, time_t currentDate) {
         cout << "This book was not borrowed by you." << endl;
         return false;
     }   
-    // Calculate overdue days
+    // Calculate overdue days (1 minute = 1 day)
     time_t dueDate = book.getDueDate();
     int overdueDays = 0;
     if (currentDate > dueDate) {
-        overdueDays = (currentDate - dueDate) / (24 * 60 * 60); // Convert seconds to days
+        overdueDays = (currentDate - dueDate) / 60; // Convert seconds to minutes
     }
     // Update book status
     book.setStatus("Available");
@@ -87,6 +87,7 @@ bool Student::returnBook(Book& book, time_t currentDate) {
     book.setDueDate(0);
     // Return fine amount if overdue
     if (overdueDays > 0) {
+        cout << "You have " << overdueDays << " overdue days. Please pay the fine." << endl;
         return true;
     }
     return false;

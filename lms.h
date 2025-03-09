@@ -133,7 +133,7 @@ public:
 class Student : public User {
 private:
     static const int MAX_BOOKS = 3;
-    static const int BORROW_PERIOD = 15 * 60; // 15 days in seconds
+    static const int BORROW_PERIOD = 15 * 60; // 15 minutes in seconds for testing
     static const int FINE_RATE = 10; // rupees per day
 
 public:
@@ -163,8 +163,8 @@ public:
 class Faculty : public User {
 private:
     static const int MAX_BOOKS = 5;
-    static const int BORROW_PERIOD = 30 * 60; // 30 days in seconds
-    static const int MAX_OVERDUE_DAYS = 60; // Maximum overdue days before blocking
+    static const int BORROW_PERIOD = 30 * 60; // 30 minutes in seconds for testing
+    static const int MAX_OVERDUE_DAYS = 60; // 60 minutes for testing
 
 public:
     // Constructors
@@ -187,6 +187,7 @@ public:
     // File I/O
     void saveToFile(ofstream& outFile) const override;
     static Faculty* loadFromFile(ifstream& inFile);
+
 };
 
 // Librarian class derived from User
@@ -211,11 +212,11 @@ private:
     int userId;
     vector<string> borrowedBooks; // ISBNs of currently borrowed books
     vector<string> borrowHistory; // ISBNs of previously borrowed books
+    
+    public:
+    // Constructors
     double fines;
     bool hasPaidFines;
-
-public:
-    // Constructors
     Account();
     Account(int userId);
 

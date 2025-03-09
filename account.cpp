@@ -50,14 +50,14 @@ void Account::addToBorrowHistory(const string& ISBN) {
     }
 }
 void Account::addFine(double amount) {
-    fines += amount;
-    if (fines > 0) {
-        hasPaidFines = false;
+    this->fines += amount;
+    if (this->fines > 0) {
+        this->hasPaidFines = false;
     }
 }
 void Account::payFines() {
-    fines = 0;
-    hasPaidFines = true;
+    this->fines = 0;
+    this->hasPaidFines = true;
 }
 
 // Display account details
@@ -65,7 +65,7 @@ void Account::displayDetails() const {
     cout << "User ID: " << userId << endl;
     cout << "Number of borrowed books: " << borrowedBooks.size() << endl;
     cout << "Total books in history: " << borrowHistory.size() << endl;
-    cout << "Outstanding fines: Rs. " << fixed << setprecision(2) << fines << endl;
+    cout << "Outstanding fines: Rs. " << fixed << setprecision(2) << this->fines << endl;
     cout << "Fines paid: " << (hasPaidFines ? "Yes" : "No") << endl;
     cout << endl;
 }
