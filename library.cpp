@@ -29,7 +29,7 @@ void Library::clearScreen() {
     #ifdef _WIN32
         system("cls"); // Clear screen for Windows
     #else
-        cout << "\033[2J\033[1;1H"; // Clear screen for Linux and MacOS
+        system("clear"); // Clear screen for Linux and MacOS
     #endif
 }
 void Library::saveData() {
